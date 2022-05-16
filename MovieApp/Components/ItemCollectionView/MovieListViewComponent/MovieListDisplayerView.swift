@@ -29,7 +29,7 @@ class ContentDisplayerView: GenericBaseView<GenericDataProtocol> {
     }()
     
     private lazy var mainStackView: UIStackView = {
-        let temp = UIStackView(arrangedSubviews: [ infoView,titleView,priceView])
+        let temp = UIStackView(arrangedSubviews: [ infoView,titleView,dateView])
         temp.translatesAutoresizingMaskIntoConstraints = false
         temp.isUserInteractionEnabled = true
         temp.alignment = .fill
@@ -57,8 +57,8 @@ class ContentDisplayerView: GenericBaseView<GenericDataProtocol> {
         temp.layer.cornerRadius = 0
         temp.layer.shadowColor = UIColor.black.cgColor
         temp.layer.shadowOffset = CGSize(width: 0, height: 0)
-       temp.layer.shadowRadius = 0
-       temp.layer.shadowOpacity = 0.6
+        temp.layer.shadowRadius = 0
+        temp.layer.shadowOpacity = 0.6
         return temp
     }()
     private lazy var detailImage: UIImageView = {
@@ -93,10 +93,10 @@ class ContentDisplayerView: GenericBaseView<GenericDataProtocol> {
         temp.textAlignment = .left
         temp.text = " "
         
-
+        
         return temp
     }()
-    private lazy var priceView: UILabel = {
+    private lazy var dateView: UILabel = {
         let temp = UILabel()
         temp.translatesAutoresizingMaskIntoConstraints = false
         temp.font = UIFont.boldSystemFont(ofSize: 16)
@@ -120,7 +120,7 @@ class ContentDisplayerView: GenericBaseView<GenericDataProtocol> {
         mainStackView1.addSubview(mainStackView)
         
         NSLayoutConstraint.activate([
-        
+            
             shadowContainerView.topAnchor.constraint(equalTo: topAnchor),
             shadowContainerView.bottomAnchor.constraint(equalTo: bottomAnchor),
             shadowContainerView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -136,10 +136,10 @@ class ContentDisplayerView: GenericBaseView<GenericDataProtocol> {
             mainStackView1.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10),
             mainStackView1.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
             mainStackView1.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
-        
+            
         ])
     }
-
+    
     override func loadDataView() {
         super.loadDataView()
         guard let data = returnData() as? MovieListDisplayerView else { return }
@@ -147,9 +147,9 @@ class ContentDisplayerView: GenericBaseView<GenericDataProtocol> {
         infoView.text = data.name
         titleView.text = data.title
         infoView.isHidden = data.isInfoViewHidden
-        priceView.text = String(data.price)
+        dateView.text = String(data.date)
     }
-
+    
     
 }
 

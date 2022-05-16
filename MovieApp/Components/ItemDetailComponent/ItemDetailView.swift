@@ -53,18 +53,19 @@ class ItemDetailView: GenericBaseView<GenericDataProtocol> {
         return temp
     }()
     private lazy var labelStackView: UIStackView = {
-        let temp = UIStackView(arrangedSubviews: [imbdImage,starIcon,ratingLabel,constRatingLabel,circleIcon,deatilDate])
+        let temp = UIStackView(arrangedSubviews: [imbdImage,starIcon,ratingLabel,circleIcon,deatilDate])
         temp.translatesAutoresizingMaskIntoConstraints = false
         temp.isUserInteractionEnabled = true
         temp.alignment = .fill
         temp.axis = .horizontal
-        temp.spacing = 5
+        temp.spacing = 10
         return temp
     }()
     private lazy var imageContainer: CustomImageViewComponentContainer = {
         let temp = CustomImageViewComponentContainer()
         temp.translatesAutoresizingMaskIntoConstraints = false
         temp.layer.cornerRadius = 2
+        temp.contentMode = .scaleToFill
         temp.clipsToBounds = true
         return temp
     }()
@@ -95,8 +96,8 @@ class ItemDetailView: GenericBaseView<GenericDataProtocol> {
         temp.translatesAutoresizingMaskIntoConstraints = false
         temp.font = UIFont.systemFont(ofSize: 16)
         temp.textColor = .black
-        temp.lineBreakMode = .byTruncatingTail
-        temp.numberOfLines = 1
+//        temp.lineBreakMode = .byTruncatingTail
+        temp.numberOfLines = 0
         temp.contentMode = .center
         temp.textAlignment = .left
         temp.text = " "
@@ -116,6 +117,7 @@ class ItemDetailView: GenericBaseView<GenericDataProtocol> {
     }()
     private lazy var deatilDate: UILabel = {
         let temp = UILabel()
+        
         temp.translatesAutoresizingMaskIntoConstraints = false
         temp.font = UIFont.systemFont(ofSize: 16)
         temp.textColor = .black
@@ -159,7 +161,7 @@ class ItemDetailView: GenericBaseView<GenericDataProtocol> {
         super.loadDataView()
         guard let data = returnData() as? ItemDetailViewData else { return }
         DispatchQueue.main.async {
-            UIView.transition(with: self, duration: 2.0, options: .transitionCrossDissolve) {
+            UIView.transition(with: self, duration: 1.0, options: .transitionCrossDissolve) {
                 self.imageContainer.setData(by: data.imageData)
                 self.infoView.text = data.infoView
                 self.deatilDate.text = data.deatilDate

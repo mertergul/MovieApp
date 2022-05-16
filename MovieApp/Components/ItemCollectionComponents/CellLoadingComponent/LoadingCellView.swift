@@ -22,6 +22,7 @@ class LoadingCellView: BaseCollectionViewCell {
         backgroundColor = .clear
         
         let indicator = UIActivityIndicatorView()
+        indicator.color = .black
         indicator.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(indicator)

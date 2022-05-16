@@ -14,12 +14,12 @@ struct MainViewBuilder {
         let viewModel = MainViewModel(dataFormatter: mainViewDataFormatter)
         let viewController = MainViewController(viewModel: viewModel)
         let navigationViewController = UINavigationController(rootViewController: viewController)
-        navigationViewController.navigationBar.barTintColor = UIColor.white
+//        navigationViewController.navigationBar.barTintColor = UIColor.white
         
         viewController.navigationController?.setNavigationBarHidden(false, animated: false)
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        viewController.navigationController?.navigationBar.standardAppearance = appearance;
+        viewController.navigationController?.navigationBar.compactAppearance = appearance;
         return navigationViewController
 
     }

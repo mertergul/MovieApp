@@ -10,14 +10,28 @@ import UIKit
 import Alamofire
 
 class MainDataFormatter: MainDataFormatterProtocol {
-    func searchsetData(with response: SearchModel) {
-        self.searchcomponentData = response
-        self.paginationData.resultCount = response.results.count
-        self.searchlistlist.append(contentsOf: response.results)
-    }
     
-    func searchDatas(response: @escaping (SearchModel) -> Void) {
-        AF.request(MovieServiceEndPoint.searchURL()).responseDecodable(of: SearchModel.self) {
+    
+    
+    
+    private var componentDataUpComing: UpComingModel?
+    private var ccomponentDataNowPlaying:NowPlayingModel?
+    
+    private var listUpComing: [UpComingResults] = [UpComingResults]()
+    private var listNowPlaying: [NowPlayingResults] = [NowPlayingResults]()
+   
+    var paginationDataUpComing: PaginationInfoUpComing = PaginationInfoUpComing()
+    var paginationDataNowPlaying:PaginationInfoNowPlaying = PaginationInfoNowPlaying()
+    
+    func fetchNowPlaying(responce: @escaping (NowPlayingModel) -> Void) {
+        AF.request(MovieServiceEndPoint.nowPlaying()).validate().responseDecodable(of: NowPlayingModel.self) {
+            (nowPlaying) in
+            guard let data = nowPlaying.value else {return}
+            responce(data)
+        }
+    }
+    func fetcUpComing(response: @escaping (UpComingModel) -> Void) {
+        AF.request(MovieServiceEndPoint.upcoming()).responseDecodable(of: UpComingModel.self) {
             (model) in
             guard let data = model.value else {
                 return
@@ -25,56 +39,59 @@ class MainDataFormatter: MainDataFormatterProtocol {
             response(data)
         }
     }
+    func getNumbeOfItemUpComing(in section: Int) -> Int {
+        let count = listUpComing.count
+        return (paginationDataUpComing.limit <= paginationDataUpComing.resultCount) ? count + 1 : count
+    }
+    func getNumbeOfItemNowPlaying(in section: Int) -> Int {
+        let count = listNowPlaying.count
+        return (paginationDataNowPlaying.limit <= paginationDataNowPlaying.resultCount) ? count + 1 : count
+    }
     
-    func fetchAllDatas(response: @escaping (MovieModel) -> Void) {
-        AF.request(MovieServiceEndPoint.upcomming()).responseDecodable(of: MovieModel.self) {
-            (model) in
-            guard let data = model.value else {
-                return
-            }
-            response(data)
-        }
+    func getCountUpComing() -> Int {
+        return listUpComing.count
+    }
+    func getCountNowPlaying() -> Int {
+        return listNowPlaying.count
+    }
+    
+    func setDataUpComing(with response: UpComingModel) {
+        self.componentDataUpComing = response
+        self.paginationDataUpComing.resultCount = response.results.count
+        self.listUpComing.append(contentsOf: response.results)
+    }
+    func setDataNowPlaying(with nowPlaying: NowPlayingModel) {
+        self.ccomponentDataNowPlaying = nowPlaying
+        self.paginationDataNowPlaying.resultCount = nowPlaying.results.count
         
-    }
-    
-    private var componentData: MovieModel?
-    private var searchcomponentData: SearchModel?
-    private var list: [MovieResults] = [MovieResults]()
-    private var searchlistlist: [SearchResult] = [SearchResult]()
-        var paginationData: PaginationInfo = PaginationInfo()
-
-    func getNumbeOfItem(in section: Int) -> Int {
-        let count = list.count
-        return (paginationData.limit <= paginationData.resultCount) ? count + 1 : count
-    }
-    
-    func getCount() -> Int {
-        return list.count
-    }
-    
-    func setData(with response: MovieModel) {
-
-        self.componentData = response
-        self.paginationData.resultCount = response.results.count
-        self.list.append(contentsOf: response.results)
+        self.listNowPlaying.append(contentsOf: nowPlaying.results)
     }
     
     
-    func getItem(at index: Int) -> GenericDataProtocol? {
-        
-        return MovieListDisplayerView(imageData: CustomImageViewComponentData(imageUrl:(MovieServiceEndPoint.IMAGE_URL.rawValue+list[index].posterCheck) ),
-                                      name: list[index].title + "(\(list[index].releaseYear))",
-                                      title: list[index].overview ?? "",
-                                      price: list[index].release_date ?? "")
+    
+    func getItemUpComing(at index: Int) -> GenericDataProtocol? {
+        return MovieListDisplayerView(imageData: CustomImageViewComponentData(imageUrl:(MovieServiceEndPoint.IMAGE_URL.rawValue+listUpComing[index].posterCheck) ),
+                                      name: listUpComing[index].title + "(\(listUpComing[index].releaseYear))",
+                                      title: listUpComing[index].overview ?? "",
+                                      date: listUpComing[index].release_date ?? "")
+    }
+    func getItemNowPlaying(at index: Int) -> GenericDataProtocol? {
+        return NowPlayingDisplayerViewData(imageData: CustomImageViewComponentData(imageUrl: (MovieServiceEndPoint.IMAGE_DETAIL.rawValue+listNowPlaying[index].posterCheck)),
+                                           name: listNowPlaying[index].title + " (\(listNowPlaying[index].releaseYear))",
+                                           title:listNowPlaying[index].overview ?? "",
+                                           date: listNowPlaying[index].release_date ?? "")
+    }
+    func getItemIdUpComing(at index: Int) -> Int {
+        selectedId = listUpComing[index].id
+        return listUpComing[index].id
+    }
+    func getItemIdNowPlayingId(at index: Int) -> Int {
+        selectedId = listNowPlaying[index].id
+        return listNowPlaying[index].id
     }
     
-    func getItemId(at index: Int) -> Int {
-        selectedId = list[index].id
-        return list[index].id
-    }
-    func reset() {
-        paginationData.offset = 0
-        list.removeAll()
-    }
+   
+    
+    
     
 }

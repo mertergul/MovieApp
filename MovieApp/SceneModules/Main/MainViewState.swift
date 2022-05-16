@@ -10,7 +10,9 @@ import Foundation
 enum ViewState {
     
     case loading
-    case done
+    case doneUpComing
+    case doneNowPlaying
     case failure
+    case detailcolletionview
     
 }

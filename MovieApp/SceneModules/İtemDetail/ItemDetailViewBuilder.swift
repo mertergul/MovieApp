@@ -1,6 +1,6 @@
 //
 //  ItemDetailViewBuilder.swift
-//  iTunes Search
+//  MovieApp
 //
 //  Created by Mert Ergul on 21.11.2021.
 //

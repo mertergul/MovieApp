@@ -1,6 +1,6 @@
 //
 //  CustomImageViewComponent.swift
-//  iTunes Search
+//  MovieApp
 //
 //  Created by Mert Ergul on 31.10.2021.
 //

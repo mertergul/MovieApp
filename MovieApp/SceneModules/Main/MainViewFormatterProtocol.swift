@@ -9,14 +9,31 @@ import Foundation
 
 protocol MainDataFormatterProtocol: AnyObject {
     
-    var paginationData: PaginationInfo { get set }
-    func getNumbeOfItem(in section: Int) -> Int
-    func getCount() -> Int
-    func setData(with response: MovieModel)
-    func searchsetData(with response: SearchModel)
-    func getItem(at index: Int) -> GenericDataProtocol?
-    func getItemId(at index: Int) -> Int
-    func reset()
-    func fetchAllDatas(response:@escaping (MovieModel) -> Void)
-    func searchDatas(response:@escaping (SearchModel) -> Void)
+    var paginationDataUpComing: PaginationInfoUpComing { get set }
+    var paginationDataNowPlaying: PaginationInfoNowPlaying { get set }
+    
+    
+    func getNumbeOfItemUpComing(in section: Int) -> Int
+    func getNumbeOfItemNowPlaying(in section: Int) -> Int
+    
+    
+    func getCountUpComing() -> Int
+    func getCountNowPlaying() -> Int
+    
+    
+    
+    func setDataUpComing(with response: UpComingModel)
+    func setDataNowPlaying(with nowPlaying: NowPlayingModel)
+    
+    func getItemUpComing(at index: Int) -> GenericDataProtocol?
+    func getItemNowPlaying(at index: Int) -> GenericDataProtocol?
+    
+    func getItemIdUpComing(at index: Int) -> Int
+    func getItemIdNowPlayingId(at index: Int) -> Int
+    
+    func fetcUpComing(response:@escaping (UpComingModel) -> Void)
+    func fetchNowPlaying(responce:@escaping (NowPlayingModel) -> Void)
+    
+    
 }
+

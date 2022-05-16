@@ -1,20 +1,27 @@
 //
 //  ItemDetailDataFormatterProtocol.swift
-//  iTunes Search
+//  MovieApp
 //
 //  Created by Mert Ergul on 21.11.2021.
 //
 
 import Foundation
 
-protocol ItemDetailDataFormatterProtocol {
+protocol ItemDetailDataFormatterProtocol: AnyObject {
+    
     
     func convertItemDetailView(from rawData: MovieDetailModel) -> ItemDetailViewData
     func detailDatas(response:@escaping (MovieDetailModel) -> ())
-    func getNumbeOfItem(in section: Int) -> Int
-    func detailDatasSmilar(response:@escaping (SimilarMoviesModel) -> Void )
-    func setData(with response: SimilarMoviesModel)
-    func getItem(at index: Int) -> GenericDataProtocol?
-    func getCount() -> Int
-    func getItemId(at index: Int) -> Int
+    
+    var  paginationDataSimilar: PaginationInfoSimilar { get set }
+    func getNumbeOfItemSimilar(in section: Int) -> Int
+    func getCountSimilar() -> Int
+    func setDataSimilar(with response: SimilarModel)
+    func getItemSimilar(at index: Int) -> GenericDataProtocol?
+    func getItemIdSimilar(at index: Int) -> Int
+    func fetcSimilar(response:@escaping (SimilarModel) -> Void)
+   
+    
+
+    
 }

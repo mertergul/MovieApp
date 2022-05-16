@@ -4,75 +4,64 @@
 //
 //  Created by Mert Ergul on 3.01.2022.
 //
-
 import UIKit
+
 class MainViewController: BaseViewController<MainViewModel> {
-    private var mainComponent: ItemCollectionView!
-    let searchBar = UISearchBar()
+    var searchController : UISearchController!
+    private var mainComponentNowPlaying: NowPlayingView!
+    private var mainComponentUpComing: ItemCollectionView!
     override func prepareViewControllerConfigurations() {
         super.prepareViewControllerConfigurations()
         addMainComponent()
         addViewModelListeners()
-        viewModel.getData()
-        configureUI()
-    }
-    func configureUI() {
-        searchBar.sizeToFit()
+        DispatchQueue.main.async {self.viewModel.getUpComing()}
+        DispatchQueue.main.async {self.viewModel.getNowPlaying()}
         
-        
-        searchBar.showsScopeBar = false
+        searchController = UISearchController(searchResultsController: nil)
+        navigationItem.titleView = searchController.searchBar
+        searchController.hidesNavigationBarDuringPresentation = false
+        let searchBar = UISearchBar()
         searchBar.delegate = self
-        searchBar.becomeFirstResponder()
-        search(shouldShow: true)
-        
-        
-        navigationController?.navigationBar.barTintColor = UIColor(red: 55/255, green: 120/255,
-                                                                   blue: 250/255, alpha: 1)
-        navigationController?.navigationBar.barStyle = .default
-        navigationController?.navigationBar.tintColor = .black
-        navigationController?.navigationBar.isTranslucent = false
-        navigationItem.title = nil
-        
-        
-    }
-    @objc func handleShowSearchBar() {
-        searchBar.becomeFirstResponder()
-        search(shouldShow: true)
-    }
-    func search(shouldShow: Bool) {
-        showSearchBarButton(shouldShow: !shouldShow)
-        searchBar.showsCancelButton = shouldShow
-        navigationItem.titleView = shouldShow ? searchBar : nil
+        searchBar.sizeToFit()
+        searchBar.searchBarStyle = .minimal
+        searchBar.placeholder = "Search by username"
+        searchBar.tintColor = UIColor.lightGray
+        searchBar.barTintColor = UIColor.lightGray
+        navigationItem.titleView = searchBar
+        searchBar.isTranslucent = true
     }
     
-    func showSearchBarButton(shouldShow: Bool) {
-        if shouldShow {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search,
-                                                                target: self,
-                                                                action: #selector(handleShowSearchBar))
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
-    }
     private func addMainComponent() {
-        mainComponent = ItemCollectionView()
-        mainComponent.translatesAutoresizingMaskIntoConstraints = false
-        mainComponent.delegate = viewModel
-        view.addSubview(mainComponent)
+        mainComponentNowPlaying = NowPlayingView()
+        mainComponentUpComing = ItemCollectionView()
+        mainComponentNowPlaying.translatesAutoresizingMaskIntoConstraints = false
+        mainComponentNowPlaying.delegate = viewModel
+        mainComponentUpComing.translatesAutoresizingMaskIntoConstraints = false
+        mainComponentUpComing.delegate = viewModel
+        view.addSubview(mainComponentNowPlaying)
+        view.addSubview(mainComponentUpComing)
         NSLayoutConstraint.activate([
-            mainComponent.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            mainComponent.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mainComponent.topAnchor.constraint(equalTo: view.topAnchor),
-            mainComponent.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            mainComponentNowPlaying.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mainComponentNowPlaying.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mainComponentNowPlaying.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            mainComponentNowPlaying.heightAnchor.constraint(equalToConstant: 350),
+            
+            mainComponentUpComing.topAnchor.constraint(equalTo: mainComponentNowPlaying.bottomAnchor, constant: 10),
+            mainComponentUpComing.bottomAnchor.constraint(equalTo: view.bottomAnchor,constant: 10),
+            mainComponentUpComing.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mainComponentUpComing.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
     }
+    
     private func addViewModelListeners() {
         viewModel.subscribeViewState { [weak self] state in
             switch state {
             case .loading:
                 return
-            case .done:
-                self?.mainComponent.reloadCollectionView()
+            case .doneUpComing:
+                self?.mainComponentUpComing.reloadCollectionView()
+            case .doneNowPlaying:
+                self?.mainComponentNowPlaying.reloadCollectionView()
             default:
                 break
             }
@@ -92,34 +81,42 @@ class MainViewController: BaseViewController<MainViewModel> {
         }
     }
 }
-private var pendingRequestWorkItem: DispatchWorkItem?
+
 
 extension MainViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.count>2 {
-            pendingRequestWorkItem?.cancel()
-            // Wrap our request in a work item
-            let requestWorkItem = DispatchWorkItem { [weak self] in
-                
-                self?.viewModel.sendsearch(with: searchText)
-                query = searchText
-                self?.resultsLoader()
-                searchBar.text = ""
-            }
-            // Save the new work item and execute it after 500 ms
-            pendingRequestWorkItem = requestWorkItem
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.500 ,execute: requestWorkItem)
-            
+        print(searchText)
+    }
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        print("a")
+        
+//            self.present(UINavigationController(rootViewController: SearchViewController()), animated: false, completion: nil)
+//        let viewController = SearchViewController()
+//        viewController.modalPresentationStyle = .overCurrentContext
+//        viewController.modalTransitionStyle = .crossDissolve
+//        present(viewController, animated: true, completion: nil)
         }
-    }
-    
-    func resultsLoader(){
-        //mainComponent.reloadCollectionView()
-        //MainDataFormatter.reset()
-        viewModel.getSearchData()
-    }
-    
-    
-    
 }
+//class SearchViewController: UIViewController {
+//    let searchBar = UISearchBar()
+//    override func viewDidLoad() {
+//        
+//        super.viewDidLoad()
+//        view.backgroundColor =  UIColor.white
+//        setUpNavBar()
+//    }
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        searchBar.becomeFirstResponder()
+//    }
+//    func setUpNavBar() {
+//        searchBar.sizeToFit()
+//        searchBar.searchBarStyle = .minimal
+//        searchBar.placeholder = "Search by "
+//        searchBar.tintColor = UIColor.lightGray
+//        searchBar.barTintColor = UIColor.lightGray
+//        navigationItem.titleView = searchBar
+//        searchBar.isTranslucent = true
+//    }
+//}

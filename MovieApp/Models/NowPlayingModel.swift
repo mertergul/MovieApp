@@ -1,17 +1,17 @@
 //
-//  SimilarModel.swift
+//  NowPlayingModel.swift
 //  MovieApp
 //
-//  Created by Mert Ergul on 17.04.2022.
+//  Created by Mert Ergul on 31.03.2022.
 //
 
 import Foundation
 
-public struct SimilarModel: Codable {
-    let results: [SimilarModelResults]
+public struct NowPlayingModel: Codable {
+    let results: [NowPlayingResults]
 }
 
-struct SimilarModelResults: Codable {
+struct NowPlayingResults: Codable {
     let id: Int
     let poster_path: String?
     let title: String

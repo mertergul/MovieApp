@@ -6,124 +6,78 @@
 //
 
 import UIKit
+
+
+
 class ItemDetailViewController: BaseViewController<ItemDetailViewModel> {
-    weak var delegate: ItemProviderProtocol?
+
     private var mainComponent: ItemDetailView!
-    
-    private lazy var similarDetailView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
-        let temp = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        temp.translatesAutoresizingMaskIntoConstraints = false
-        temp.delegate = self
-        temp.dataSource = self
-        temp.register(ItemDetailViewDataCell.self, forCellWithReuseIdentifier: ItemDetailViewDataCell.identifier)
-        temp.register(LoadingCellView.self, forCellWithReuseIdentifier: LoadingCellView.identifier)
-        return temp
-    }()
-    
-    
+    private var detailScrollView = UIScrollView()
+    private var similarComponent: SimilarView!
     override func prepareViewControllerConfigurations() {
         super.prepareViewControllerConfigurations()
-        
-        view.backgroundColor = .white
-        
         addMainComponent()
+        detailScrollView.minimumZoomScale = 1.0
+        detailScrollView.maximumZoomScale = 4.0
+        detailScrollView.zoomScale = 1.0
+        detailScrollView.isUserInteractionEnabled = true
+//                pageScroll.delegate = self //Here
         viewModelListeners()
-        viewModel.getDatal()
-        viewModel.getData()
         
-        
+        DispatchQueue.main.async {self.viewModel.similarGetData()}
+        DispatchQueue.main.async {self.viewModel.getData()}
     }
     
     private func addMainComponent() {
         mainComponent = ItemDetailView()
+        similarComponent = SimilarView()
         mainComponent.translatesAutoresizingMaskIntoConstraints = false
+        detailScrollView.translatesAutoresizingMaskIntoConstraints = false
         
+        similarComponent.translatesAutoresizingMaskIntoConstraints = false
+        similarComponent.delegate = viewModel
         
-        view.addSubview(mainComponent)
-        mainComponent.addSubview(similarDetailView)
+        detailScrollView.isScrollEnabled = true
+        view.addSubview(detailScrollView)
+        detailScrollView.addSubview(mainComponent)
+        detailScrollView.addSubview(similarComponent)
         
         NSLayoutConstraint.activate([
-        
-            mainComponent.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
-            mainComponent.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            detailScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            detailScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            detailScrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            detailScrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
             
+            similarComponent.widthAnchor.constraint(equalTo: detailScrollView.widthAnchor),
+            similarComponent.heightAnchor.constraint(equalToConstant: 200),
+            similarComponent.bottomAnchor.constraint(equalTo: detailScrollView.bottomAnchor),
             
-            similarDetailView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            similarDetailView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            similarDetailView.topAnchor.constraint(equalTo: mainComponent.bottomAnchor),
-            similarDetailView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            mainComponent.centerXAnchor.constraint(equalTo: detailScrollView.centerXAnchor),
+            mainComponent.widthAnchor.constraint(equalTo: detailScrollView.widthAnchor),
+            mainComponent.topAnchor.constraint(equalTo: detailScrollView.topAnchor),
+            mainComponent.bottomAnchor.constraint(equalTo: detailScrollView.bottomAnchor,constant: -200) ,
+
         ])
     }
-    func reloadCollectionView() {
-        DispatchQueue.main.async {
-            self.similarDetailView.reloadData()
-        }
-    }
-    
     private func viewModelListeners() {
-        viewModel.subscribeViewState { [weak self] data in
+
+        viewModel.subscribeViewState { [weak self] state in
+
+
+            switch state{
+            case .loading:
+                return
+            case .detailcolletionview:
+                self?.similarComponent.reloadCollectionView()
+            }
+        }
+
+        viewModel.subscribeViewStateDetailView { [weak self ] data in
             self?.mainComponent.setData(by: data)
-            
-            self?.reloadCollectionView()
         }
-    }
-    func isLoadingCell(for indexPath: IndexPath) -> Bool {
-        return delegate?.isLoadingCell(for: indexPath.row) ?? false
+
     }
     
-}
-// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
-extension ItemDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-   
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return delegate?.askNumberOfItem(in: section) ?? 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
-        if isLoadingCell(for: indexPath) {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoadingCellView.identifier, for: indexPath) as? LoadingCellView else { fatalError() }
-            return cell
-        } else {
-            guard let data = delegate?.askData(at: indexPath.row) else { fatalError("Please provide at least one item!") }
-            
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionCellView.identifier, for: indexPath) as? ItemCollectionCellView else { fatalError("Please provide cell items") }
-            cell.setData(by: data)
-            return cell
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if isLoadingCell(for: indexPath) {
-                pageNumber += 1
-
-
-
-            delegate?.getMoreData()
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath)
-        cell?.isUserInteractionEnabled = true
-        self.delegate?.selectedItem(at: indexPath.row)
-        
-    }
     
 }
 
-// MARK: - UICollectionViewDelegateFlowLayout
-extension ItemDetailViewController: UICollectionViewDelegateFlowLayout {
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-
-        let width = (((UIScreen.main.bounds.width)))
-        return CGSize(width: width, height: 150)
-        
-    }
-    
-}

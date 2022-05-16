@@ -7,11 +7,11 @@
 
 import Foundation
 
-public struct MovieModel: Codable {
-    let results: [MovieResults]
+public struct UpComingModel: Codable {
+    let results: [UpComingResults]
 }
 
-struct MovieResults: Codable {
+struct UpComingResults: Codable {
     let id: Int
     let poster_path: String?
     let title: String
