@@ -8,7 +8,7 @@
          location = "group:1.png">
       </FileRef>
       <FileRef
-         location = "group:2.png">
+         location = "group:/Users/mertergul/Desktop/MovieApp/2.png">
       </FileRef>
       <FileRef
          location = "group:3.png">
