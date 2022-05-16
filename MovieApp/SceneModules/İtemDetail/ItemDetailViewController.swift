@@ -21,7 +21,6 @@ class ItemDetailViewController: BaseViewController<ItemDetailViewModel> {
         detailScrollView.maximumZoomScale = 4.0
         detailScrollView.zoomScale = 1.0
         detailScrollView.isUserInteractionEnabled = true
-//                pageScroll.delegate = self //Here
         viewModelListeners()
         
         DispatchQueue.main.async {self.viewModel.similarGetData()}
