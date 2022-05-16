@@ -17,13 +17,13 @@ The application has been developed for users to search for movies, see their det
 * Swift Package Manager
 * image caching
 * Building Programmatic UI
-* Alamofiew
+* Alamofire
 
 
 
-| Splash Screen | Home Screen | Search Screen | Detail Screen | App |      
+ 
 | --- | --- | --- | --- | --- | 
-|<img src="1.png" width="600"> | <2.png" width="600"> | <img src="3.png" width="600"> | <img src="gif/Detailscreen.png" width="600">| <img src="gif/itunes.gif" width="600"> | 
+|<img src="1.png" width="600"> | <"2.png" width="600"> | <img src="3.png" width="600"> | <img src="gif/Detailscreen.png" width="600">| <img src="gif/itunes.gif" width="600"> | 
 
 
 
