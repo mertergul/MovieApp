@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
+   <Group
+      location = "container:"
+      name = "gif">
+      <FileRef
+         location = "group:1.png">
+      </FileRef>
+      <FileRef
+         location = "group:/Users/mertergul/Desktop/MovieApp/2.png">
+      </FileRef>
+      <FileRef
+         location = "group:3.png">
+      </FileRef>
+   </Group>
    <FileRef
       location = "group:MovieApp.xcodeproj">
    </FileRef>
